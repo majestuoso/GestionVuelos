@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservas Aéreas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <h1>✈ Reservas Aéreas</h1>
+  <p>Gestión moderna de vuelos y reservas</p>
+</header>
+
+<div class="container">
+
+  <section class="card">
+    <div class="card-header">
+      <h2>Vuelos Disponibles</h2>
+      <button id="loadFlightsBtn" class="btn primary">🔍 Cargar Vuelos</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>N° Vuelo</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Capacidad</th>
+          <th>Reservas</th>
+        </tr>
+      </thead>
+      <tbody id="flightsTable"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <h2>Reservas</h2>
+      <button id="loadReservationsBtn" class="btn secondary">📄 Mostrar Reservas</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Asiento</th>
+          <th>Estado</th>
+          <th>Vuelo</th>
+          <th>Editar</th>
+        </tr>
+      </thead>
+      <tbody id="reservationsTable"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Cambiar Fecha</h2>
+    <div class="form-group">
+      <label>ID Reserva</label>
+      <input type="number" id="reservationId">
+    </div>
+    <div class="form-group">
+      <label>Nueva Fecha</label>
+      <input type="date" id="newDate">
+    </div>
+    <button id="changeDateBtn" class="btn primary full">🔄 Cambiar Fecha</button>
+    <p id="feedback"></p>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
