@@ -1,7 +1,7 @@
 # GestionVuelos
 
 
-node server.js
+node index.js
 
 👉 http://localhost:3000
 
