@@ -1,0 +1,177 @@
+/* ===== Reset básico ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Variables de color ===== */
+:root {
+    --primary: #1e40af;    /* Azul intenso */
+    --secondary: #2563eb;  /* Azul más claro */
+    --bg: #f3f4f6;         /* Gris claro */
+    --card: #ffffff;       /* Blanco tarjetas */
+    --text: #111827;       /* Gris oscuro */
+    --text-light: #6b7280; /* Gris medio */
+    --success: #16a34a;    /* Verde */
+    --error: #dc2626;      /* Rojo */
+}
+
+/* ===== Body ===== */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* ===== Header ===== */
+.header {
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    font-size: 1.1rem;
+    color: #dbeafe;
+}
+
+/* ===== Container ===== */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto 2rem auto;
+    display: grid;
+    gap: 2rem;
+}
+
+/* ===== Cards ===== */
+.card {
+    background-color: var(--card);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+/* ===== Botones ===== */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s;
+    color: white;
+}
+
+.btn.primary {
+    background-color: var(--primary);
+}
+
+.btn.primary:hover {
+    background-color: #1e3a8a;
+}
+
+.btn.secondary {
+    background-color: var(--secondary);
+}
+
+.btn.secondary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn.full {
+    width: 100%;
+}
+
+/* ===== Tables ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: var(--primary);
+    color: white;
+}
+
+thead th {
+    padding: 0.75rem;
+    text-align: left;
+}
+
+tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Alternar color de filas */
+tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+/* ===== Formulario cambiar fecha ===== */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+/* Feedback de acciones */
+#feedback {
+    margin-top: 0.75rem;
+    font-weight: 600;
+    color: var(--success);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    thead th, tbody td {
+        font-size: 0.9rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .header p {
+        font-size: 1rem;
+    }
+}
