@@ -1,4 +1,9 @@
- SELECT r.*, e.nombre_estado AS estado
+const db = require("../db");
+
+const Reserva = {
+    async getAll() {
+        const [rows] = await db.query(`
+            SELECT r.*, e.nombre_estado AS estado
             FROM reservas r
             LEFT JOIN Estados e ON r.id_estado = e.id_estado
             ORDER BY r.id_reserva DESC
