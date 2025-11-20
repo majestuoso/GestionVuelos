@@ -1,15 +1,14 @@
-
 const db = require("../db");
 
 const Vuelos = {
     async getAll() {
         try {
             const [rows] = await db.query(`
-                SELECT v.id_vuelo, v.numero_vuelo, v.origen, v.destino, v.fecha_hora, v.capacidad,
-                       COUNT(r.vuelo_id) AS reservas
+                SELECT v.id_vuelo, v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida, v.capacidad,
+                       COUNT(r.id_reserva) AS reservas
                 FROM Vuelos v
-                LEFT JOIN reservas r ON v.id_vuelo = r.vuelo_id
-                GROUP BY v.id_vuelo
+                LEFT JOIN Reservas r ON v.id_vuelo = r.id_vuelo
+                GROUP BY v.id_vuelo, v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida, v.capacidad
             `);
             return rows;
         } catch (err) {
