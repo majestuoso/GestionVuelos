@@ -3,10 +3,12 @@
 
 node index.js
 
-👉 http://localhost:3000
+ http://localhost:3000
 
 
+python3 -m http.server 5500
 
+http://localhost: 5500
 
 
 ✔ Obtener todas

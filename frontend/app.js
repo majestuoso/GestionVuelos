@@ -18,7 +18,7 @@ function renderVuelosEnTabla(vuelosLista) {
       <td>${new Date(v.fecha_hora_salida).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
       <td>${v.numero_vuelo}</td>
       <td>${v.destino}</td>
-      <td>${v.via || "-"}</td>
+      <td>${v.origen}</td>
       <td>${v.checkin || "-"}</td>
       <td>${v.puerta || "-"}</td>
       <td><span class="estado ${claseEstado}">${v.estado || v.remarks || "Programado"}</span></td>
@@ -54,6 +54,7 @@ async function cargarResumen() {
         const option = document.createElement("option");
         option.value = v.id_vuelo;
         option.textContent = `${v.numero_vuelo} - ${v.origen} → ${v.destino}`;
+        option.dataset.capacidad = v.capacidad;
         selectVuelo.appendChild(option);
       });
       actualizarAsientos();
@@ -64,8 +65,8 @@ async function cargarResumen() {
   }
 }
 
-/* Actualizar lista de asientos */
-function actualizarAsientos() {
+/* Actualizar lista de asientos libres */
+async function actualizarAsientos() {
   const selectVuelo = document.getElementById("vuelo");
   const selectAsiento = document.getElementById("asiento");
   if (!selectVuelo || !selectAsiento) return;
@@ -75,12 +76,26 @@ function actualizarAsientos() {
   selectAsiento.innerHTML = "";
 
   if (vuelo) {
-    const total = Math.max(0, vuelo.asientos_disponibles ?? 0);
-    for (let i = 1; i <= total; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `Asiento ${i}`;
-      selectAsiento.appendChild(option);
+    try {
+      // pedir al backend los asientos ocupados
+      const res = await fetch(`http://localhost:3000/vuelos/${idVuelo}/asientos`);
+      const ocupados = await res.json(); // ej: ["12A","15B"]
+
+      // generar lista de todos los asientos hasta la capacidad
+      const todos = Array.from({ length: vuelo.capacidad }, (_, i) => `${i + 1}A`);
+
+      // filtrar los libres
+      const libres = todos.filter(a => !ocupados.includes(a));
+
+      // llenar el select con los libres
+      libres.forEach(asiento => {
+        const option = document.createElement("option");
+        option.value = asiento;
+        option.textContent = asiento;
+        selectAsiento.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error cargando asientos libres:", err);
     }
   }
 }
@@ -116,7 +131,7 @@ if (formReserva) {
   });
 }
 
-/* Buscar reserva por ID de reserva */
+/* Buscar reserva por ID */
 const btnBuscar = document.getElementById("btn-buscar");
 if (btnBuscar) {
   btnBuscar.addEventListener("click", async () => {
@@ -152,7 +167,7 @@ if (btnBuscar) {
       `;
       contenedor.innerHTML = html;
 
-      // --- Editar reserva ---
+      // Editar reserva
       document.querySelector(".btn-editar").addEventListener("click", () => {
         document.getElementById("editar-id").value = r.id_reserva;
         document.getElementById("editar-nombre").value = r.nombre;
@@ -160,7 +175,6 @@ if (btnBuscar) {
         document.getElementById("editar-dni").value = r.dni;
         document.getElementById("editar-asiento").value = r.asiento;
 
-        // llenar select de vuelos
         const editarVueloSelect = document.getElementById("editar-vuelo");
         editarVueloSelect.innerHTML = "";
         vuelos.forEach(v => {
@@ -174,17 +188,20 @@ if (btnBuscar) {
         document.getElementById("panel-editar").style.display = "block";
       });
 
-      // --- Cancelar reserva ---
-           // --- Cancelar reserva ---
+            // --- Cancelar reserva ---
       document.querySelector(".btn-eliminar").addEventListener("click", async () => {
         if (!confirm("¿Seguro que quieres cancelar la reserva?")) return;
-        const resDel = await fetch(`http://localhost:3000/reservas/${r.id_reserva}`, { method: "DELETE" });
-        if (resDel.ok) {
-          alert("Reserva cancelada ❌");
-          contenedor.innerHTML = "";
-          cargarResumen();
-        } else {
-          alert("❌ Error al cancelar reserva");
+        try {
+          const resDel = await fetch(`http://localhost:3000/reservas/${r.id_reserva}`, { method: "DELETE" });
+          if (resDel.ok) {
+            alert("Reserva cancelada ❌");
+            contenedor.innerHTML = "";
+            cargarResumen(); // refrescar vuelos y asientos
+          } else {
+            alert("❌ Error al cancelar reserva");
+          }
+        } catch (err) {
+          alert("❌ Error de conexión al cancelar");
         }
       });
 
@@ -204,7 +221,7 @@ if (formEditar) {
     const apellido = document.getElementById("editar-apellido").value;
     const dni = document.getElementById("editar-dni").value;
     const asiento = document.getElementById("editar-asiento").value;
-    const id_vuelo = document.getElementById("editar-vuelo").value; // nuevo campo para cambiar vuelo
+    const id_vuelo = document.getElementById("editar-vuelo").value;
 
     try {
       const resPut = await fetch(`http://localhost:3000/reservas/${id}`, {
@@ -215,10 +232,9 @@ if (formEditar) {
 
       if (resPut.ok) {
         alert("Reserva modificada ✅");
-        document.getElementById("panel-editar").style.display = "none"; // ocultar formulario
-        formEditar.reset(); // limpiar campos
-        btnBuscar.click(); // refrescar listado
-        cargarResumen();
+        document.getElementById("panel-editar").style.display = "none";
+        formEditar.reset();
+        cargarResumen(); // refrescar vuelos y asientos
       } else {
         alert("❌ Error al modificar reserva");
       }
@@ -226,6 +242,41 @@ if (formEditar) {
       alert("❌ Error de conexión al modificar");
     }
   });
+  /* Actualizar lista de asientos libres */
+async function actualizarAsientos() {
+  const selectVuelo = document.getElementById("vuelo");
+  const selectAsiento = document.getElementById("asiento");
+  if (!selectVuelo || !selectAsiento) return;
+
+  const idVuelo = selectVuelo.value;
+  const vuelo = vuelos.find(v => String(v.id_vuelo) === String(idVuelo));
+  selectAsiento.innerHTML = "";
+
+  if (vuelo) {
+    try {
+      // pedir al backend los asientos ocupados
+      const res = await fetch(`http://localhost:3000/vuelos/${idVuelo}/asientos`);
+      const ocupados = await res.json(); // ej: ["12A","15B"]
+
+      // generar lista de todos los asientos hasta la capacidad
+      const todos = Array.from({ length: vuelo.capacidad }, (_, i) => `${i + 1}A`);
+
+      // filtrar los libres
+      const libres = todos.filter(a => !ocupados.includes(a));
+
+      // llenar el select con los libres
+      libres.forEach(asiento => {
+        const option = document.createElement("option");
+        option.value = asiento;
+        option.textContent = asiento;
+        selectAsiento.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error cargando asientos libres:", err);
+    }
+  }
+}
+
 }
 
 /* Inicialización */
