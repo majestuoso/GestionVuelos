@@ -1,177 +1,158 @@
-/* ===== Reset básico ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* ===== Variables de color ===== */
-:root {
-    --primary: #1e40af;    /* Azul intenso */
-    --secondary: #2563eb;  /* Azul más claro */
-    --bg: #f3f4f6;         /* Gris claro */
-    --card: #ffffff;       /* Blanco tarjetas */
-    --text: #111827;       /* Gris oscuro */
-    --text-light: #6b7280; /* Gris medio */
-    --success: #16a34a;    /* Verde */
-    --error: #dc2626;      /* Rojo */
-}
-
-/* ===== Body ===== */
+/* ===== Base ===== */
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 20px;
+  color: #333;
 }
 
-/* ===== Header ===== */
-.header {
-    background-color: var(--primary);
-    color: white;
-    text-align: center;
-    padding: 2rem 1rem;
-    margin-bottom: 2rem;
+h1 {
+  text-align: center;
+  font-size: 2.2em;
+  margin-bottom: 25px;
+  color: #0077cc;
 }
 
-.header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-.header p {
-    font-size: 1.1rem;
-    color: #dbeafe;
-}
-
-/* ===== Container ===== */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto 2rem auto;
-    display: grid;
-    gap: 2rem;
-}
-
-/* ===== Cards ===== */
+/* ===== Card genérica ===== */
 .card {
-    background-color: var(--card);
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+/* ===== Card KPI resumen ===== */
+.cards-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.card-header h2 {
-    font-size: 1.5rem;
-    color: var(--text);
+.card.azul {
+  background: linear-gradient(135deg, #0077cc, #00aaff);
+  color: #fff;
+}
+.card.verde {
+  background: linear-gradient(135deg, #28a745, #5cd65c);
+  color: #fff;
+}
+.card.violeta {
+  background: linear-gradient(135deg, #6f42c1, #9b59b6);
+  color: #fff;
 }
 
-/* ===== Botones ===== */
-.btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.3s;
-    color: white;
+.card h3 {
+  margin-bottom: 10px;
 }
 
-.btn.primary {
-    background-color: var(--primary);
+/* ===== Tablero de vuelos ===== */
+.tablero-vuelos {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
 }
 
-.btn.primary:hover {
-    background-color: #1e3a8a;
+.tablero-vuelos h2 {
+  color: #93c5fd;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-.btn.secondary {
-    background-color: var(--secondary);
+.tabla-vuelos {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
 }
 
-.btn.secondary:hover {
-    background-color: #1d4ed8;
+.tabla-vuelos th {
+  background: #1e293b;
+  color: #fcd34d;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 2px solid #334155;
 }
 
-.btn.full {
-    width: 100%;
+.tabla-vuelos td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #334155;
 }
 
-/* ===== Tables ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
+.tabla-vuelos tr:hover {
+  background: #1e293b;
 }
 
-thead {
-    background-color: var(--primary);
-    color: white;
+/* Estado con color */
+.estado {
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
 }
 
-thead th {
-    padding: 0.75rem;
-    text-align: left;
+.estado.gate-open {
+  background: #16a34a;
+  color: #fff;
+}
+.estado.boarding {
+  background: #f59e0b;
+  color: #fff;
+}
+.estado.delayed {
+  background: #dc2626;
+  color: #fff;
 }
 
-tbody td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #e5e7eb;
+/* ===== Formulario de reservas ===== */
+form label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+  color: #444;
 }
 
-/* Alternar color de filas */
-tbody tr:nth-child(even) {
-    background-color: #f9fafb;
+form input, form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
-/* ===== Formulario cambiar fecha ===== */
-.form-group {
-    margin-bottom: 1rem;
+button {
+  padding: 12px 20px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #0077cc;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.3rem;
-    font-weight: 600;
+button:hover {
+  background: #005fa3;
+  transform: scale(1.02);
 }
 
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-}
-
-/* Feedback de acciones */
-#feedback {
-    margin-top: 0.75rem;
-    font-weight: 600;
-    color: var(--success);
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    thead th, tbody td {
-        font-size: 0.9rem;
-    }
-
-    .header h1 {
-        font-size: 2rem;
-    }
-
-    .header p {
-        font-size: 1rem;
-    }
+/* ===== Panel de resumen de reserva ===== */
+#resumen {
+  background: #eef6ff;
+  color: #333;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
 }
