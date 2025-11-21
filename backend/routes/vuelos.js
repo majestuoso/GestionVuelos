@@ -1,31 +1,27 @@
 // routes/vuelos.js
-const express = require("express");
-const router = express.Router();
-const Vuelos = require("../models/VuelosModel");
+import express from "express";
+import Vuelos from "../models/vuelosmodels.js"; // asegúrate que el nombre coincide EXACTO
 
-// --- Listar todos los vuelos ---
+const router = express.Router();
+
+// Obtener todos los vuelos
 router.get("/", async (req, res) => {
   try {
     let vuelos = await Vuelos.getAll();
 
-    // Calcular estado dinámico según hora actual
     const ahora = new Date();
     vuelos = vuelos.map(v => {
       const salida = new Date(v.fecha_hora_salida);
-
-      // Ejemplo: vuelo dura 3 horas
       const llegada = new Date(salida.getTime() + 3 * 60 * 60 * 1000);
 
-      let estado = "Programado";
+      let estado = "programado";
       if (ahora >= salida && ahora <= llegada) {
-        estado = "En curso";
+        estado = "en curso";
       } else if (ahora > llegada) {
-        estado = "Finalizado";
+        estado = "finalizado";
       }
-
-      // Si existe un campo de demora en la DB
-      if (v.demorado && v.demorado === 1) {
-        estado = "Demorado";
+      if (v.estado && v.estado.toLowerCase() === "demorado") {
+        estado = "demorado";
       }
 
       return { ...v, estado };
@@ -34,8 +30,62 @@ router.get("/", async (req, res) => {
     res.json(vuelos);
   } catch (err) {
     console.error("Error al obtener vuelos:", err);
-    res.status(500).json({ error: "Error al obtener los vuelos" });
+    // devolver siempre un array para que el front no rompa con forEach
+    res.status(500).json([]);
   }
 });
 
-module.exports = router;
+// Obtener un vuelo por ID
+router.get("/:id", async (req, res) => {
+  try {
+    const vuelo = await Vuelos.getById(req.params.id);
+    if (!vuelo) {
+      return res.status(404).json({ error: "Vuelo no encontrado" });
+    }
+    res.json(vuelo);
+  } catch (err) {
+    console.error("Error al obtener vuelo:", err);
+    res.status(500).json({ error: "Error al obtener el vuelo" });
+  }
+});
+
+// Crear un nuevo vuelo
+router.post("/", async (req, res) => {
+  try {
+    const id = await Vuelos.create(req.body);
+    res.status(201).json({ id });
+  } catch (err) {
+    console.error("Error al crear vuelo:", err);
+    res.status(500).json({ error: "Error al crear el vuelo" });
+  }
+});
+
+// Actualizar vuelo
+router.put("/:id", async (req, res) => {
+  try {
+    const updated = await Vuelos.update(req.params.id, req.body);
+    if (updated === 0) {
+      return res.status(404).json({ error: "Vuelo no encontrado" });
+    }
+    res.json({ message: "Vuelo actualizado correctamente" });
+  } catch (err) {
+    console.error("Error al actualizar vuelo:", err);
+    res.status(500).json({ error: "Error al actualizar el vuelo" });
+  }
+});
+
+// Eliminar vuelo
+router.delete("/:id", async (req, res) => {
+  try {
+    const deleted = await Vuelos.delete(req.params.id);
+    if (deleted === 0) {
+      return res.status(404).json({ error: "Vuelo no encontrado" });
+    }
+    res.json({ message: "Vuelo eliminado correctamente" });
+  } catch (err) {
+    console.error("Error al eliminar vuelo:", err);
+    res.status(500).json({ error: "Error al eliminar el vuelo" });
+  }
+});
+
+export default router;   // 👈 obligatorio en ES Modules
