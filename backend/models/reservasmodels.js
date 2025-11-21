@@ -1,43 +1,83 @@
-const db = require("../db");
+// models/ReservasModel.js
+const db = require("../db/DB");
 
 const Reserva = {
-    async getAll() {
-        const [rows] = await db.query(`
-            SELECT r.*, e.nombre_estado AS estado
-            FROM reservas r
-            LEFT JOIN Estados e ON r.id_estado = e.id_estado
-            ORDER BY r.id_reserva DESC
-        `);
-        return rows;
-    },
+  async getAll() {
+    const sql = `
+      SELECT r.id_reserva, r.id_vuelo, r.asiento, r.estado, r.fecha_reserva,
+             p.nombre, p.apellido, p.dni,
+             v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida
+      FROM Reservas r
+      JOIN Pasajeros p ON r.id_pasajero = p.id_pasajero
+      JOIN Vuelos v ON r.id_vuelo = v.id_vuelo
+      ORDER BY r.fecha_reserva DESC
+    `;
+    const [rows] = await db.query(sql);
+    return rows;
+  },
 
-    async getById(id) {
-        const [rows] = await db.query(`
-            SELECT r.*, e.nombre_estado AS estado
-            FROM reservas r
-            LEFT JOIN estados e ON r.id_estado = e.id_estado
-            WHERE r.id_reserva = ?
-        `, [id]);
-        return rows[0] || null;
-    },
+  async getById(id) {
+    const sql = `
+      SELECT r.id_reserva, r.id_vuelo, r.asiento, r.estado, r.fecha_reserva,
+             p.nombre, p.apellido, p.dni,
+             v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida
+      FROM Reservas r
+      JOIN Pasajeros p ON r.id_pasajero = p.id_pasajero
+      JOIN Vuelos v ON r.id_vuelo = v.id_vuelo
+      WHERE r.id_reserva = ?
+    `;
+    const [rows] = await db.query(sql, [id]);
+    return rows[0];
+  },
 
-    async update(id, data) {
-        const { fecha, asiento, estado } = data;
-        const [estadoQuery] = await db.query(
-            "SELECT id_estado FROM Estados WHERE nombre_estado = ?",
-            [estado]
-        );
-        if (!estadoQuery.length) throw new Error("Estado inválido");
-        const id_estado = estadoQuery[0].id_estado;
+  async getByDni(dni) {
+    const sql = `
+      SELECT r.id_reserva, r.id_vuelo, r.asiento, r.estado, r.fecha_reserva,
+             p.id_pasajero, p.nombre, p.apellido, p.dni,
+             v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida
+      FROM Reservas r
+      JOIN Pasajeros p ON r.id_pasajero = p.id_pasajero
+      JOIN Vuelos v ON r.id_vuelo = v.id_vuelo
+      WHERE p.dni = ?
+      ORDER BY r.fecha_reserva DESC
+    `;
+    const [rows] = await db.query(sql, [dni]);
+    return rows; // 🔥 devolver todas las reservas del pasajero
+  },
 
-        await db.query(`
-            UPDATE reservas SET
-                fecha = ?, asiento = ?, id_estado = ?
-            WHERE id_reserva = ?
-        `, [fecha, asiento, id_estado, id]);
+  async create(reserva) {
+    const sql = `
+      INSERT INTO Reservas (id_vuelo, id_pasajero, asiento, estado)
+      VALUES (?, ?, ?, ?)
+    `;
+    const [result] = await db.query(sql, [
+      reserva.id_vuelo,
+      reserva.id_pasajero,
+      reserva.asiento,
+      reserva.estado || "CONFIRMADA"
+    ]);
+    return result.insertId;
+  },
 
-        return { id_reserva: id, ...data };
-    }
+  async update(id, data) {
+    const sql = `
+      UPDATE Reservas
+      SET asiento = ?, estado = ?
+      WHERE id_reserva = ?
+    `;
+    const [result] = await db.query(sql, [
+      data.asiento,
+      data.estado || "CONFIRMADA",
+      id
+    ]);
+    return result.affectedRows;
+  },
+
+  async delete(id) {
+    const sql = `DELETE FROM Reservas WHERE id_reserva = ?`;
+    const [result] = await db.query(sql, [id]);
+    return result.affectedRows;
+  }
 };
 
 module.exports = Reserva;

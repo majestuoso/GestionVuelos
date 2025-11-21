@@ -1,17 +1,20 @@
-// index.js
-import express from 'express';
+import express from "express";
+import cors from "cors";
+
+// importa tus routers
+import reservasRouter from "./routes/reservas.js";
+import vuelosRouter from "./routes/vuelos.js";
 
 const app = express();
-const PORT = 3000;
-
+app.use(cors());
 app.use(express.json());
 
-// Ruta principal
-app.get('/', (req, res) => {
-  res.send('Bienvenidos al sistema de reservas de vuelos');
-});
+// montar routers
+app.use("/reservas", reservasRouter);
+app.use("/vuelos", vuelosRouter);
 
-// Arrancar servidor
+// levantar servidor
+const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
