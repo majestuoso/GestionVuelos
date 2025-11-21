@@ -31,28 +31,39 @@ router.get("/", async (req, res) => {
 });
 
 // --- Buscar reservas por ID de vuelo ---
+
 router.get("/:id_reserva", async (req, res) => {
   const { id_reserva } = req.params;
   try {
-    const reserva = await pool.query(
+    // 1. DESESTRUCTURAR para obtener solo el array de filas (rows)
+    const [rows] = await pool.query( 
       `
-      SELECT id_reserva, id_vuelo, id_pasajero, fecha_reserva, asiento, estado
+      SELECT r.id_reserva, r.id_vuelo, r.id_pasajero, r.fecha_reserva, r.asiento, r.estado,
+             p.nombre, p.apellido, p.dni, 
+             v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida
       FROM Reservas r
+      JOIN Pasajeros p ON r.id_pasajero = p.id_pasajero
+      JOIN Vuelos v ON r.id_vuelo = v.id_vuelo
       WHERE r.id_reserva = ?
      `,
       [id_reserva]
     );
 
-    if (!reserva) {
-      return res.status(404).json({ error: "No se encontro la reserva" });
+    // 2. OBTENER el primer resultado (la reserva)
+    const reserva = rows[0];
+
+    // La lógica de verificación debe ser sobre si se encontró alguna fila (rows.length)
+    if (!reserva) { 
+      return res.status(404).json({ error: "No se encontró la reserva" });
     }
-    res.json(reserva);
+    
+    // 3. ENVIAR solo el objeto de la reserva
+    res.json(reserva); 
   } catch (err) {
-    console.error("Error al buscar reservas por vuelo:", err);
-    res.status(500).json({ error: "Error al buscar reservas por vuelo" });
+    console.error("Error al buscar reservas:", err); // Mensaje corregido
+    res.status(500).json({ error: "Error al buscar reservas" });
   }
 });
-
 // --- Crear nueva reserva ---
 router.post("/", async (req, res) => {
   const { id_vuelo, nombre, apellido, dni, asiento } = req.body;

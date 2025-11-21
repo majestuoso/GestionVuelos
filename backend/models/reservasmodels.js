@@ -16,18 +16,12 @@ const Reserva = {
     return rows;
   },
 
-  async getById(id) {
-    const sql = `
-      SELECT r.id_reserva, r.id_vuelo, r.asiento, r.estado, r.fecha_reserva,
-             p.nombre, p.apellido, p.dni,
-             v.numero_vuelo, v.origen, v.destino, v.fecha_hora_salida
-      FROM Reservas r
-      JOIN Pasajeros p ON r.id_pasajero = p.id_pasajero
-      JOIN Vuelos v ON r.id_vuelo = v.id_vuelo
-      WHERE r.id_reserva = ?
-    `;
+
+async getById(id) {
+    const sql = `SELECT * FROM Reservas WHERE id_reserva = ?`; // <-- Revisa esta línea
     const [rows] = await db.query(sql, [id]);
-    return rows[0];
+    return rows[0]; // Si rows[0] es undefined, el backend devuelve "No se encontró"
+
   },
 
   async getByDni(dni) {
