@@ -3,7 +3,8 @@ import mysql from "mysql2/promise";
 
 const router = express.Router();
 
-// conexión pool (podés importar desde un módulo db.js si ya lo tenés)
+// Nota: En un proyecto final, es mejor importar el pool desde un archivo db.js
+// Pero para la funcionalidad inmediata, se deja la definición aquí:
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
@@ -31,11 +32,9 @@ router.get("/", async (req, res) => {
 });
 
 // --- Buscar reservas por ID de vuelo ---
-
 router.get("/:id_reserva", async (req, res) => {
   const { id_reserva } = req.params;
   try {
-    // 1. DESESTRUCTURAR para obtener solo el array de filas (rows)
     const [rows] = await pool.query( 
       `
       SELECT r.id_reserva, r.id_vuelo, r.id_pasajero, r.fecha_reserva, r.asiento, r.estado,
@@ -49,26 +48,36 @@ router.get("/:id_reserva", async (req, res) => {
       [id_reserva]
     );
 
-    // 2. OBTENER el primer resultado (la reserva)
     const reserva = rows[0];
-
-    // La lógica de verificación debe ser sobre si se encontró alguna fila (rows.length)
     if (!reserva) { 
       return res.status(404).json({ error: "No se encontró la reserva" });
     }
     
-    // 3. ENVIAR solo el objeto de la reserva
     res.json(reserva); 
   } catch (err) {
-    console.error("Error al buscar reservas:", err); // Mensaje corregido
+    console.error("Error al buscar reservas:", err);
     res.status(500).json({ error: "Error al buscar reservas" });
   }
 });
+
 // --- Crear nueva reserva ---
 router.post("/", async (req, res) => {
   const { id_vuelo, nombre, apellido, dni, asiento } = req.body;
   try {
-    // Buscar pasajero por DNI
+    // 1. BUSCAR ASIENTO OCUPADO (VALIDACIÓN CLAVE) 🛑
+    const [asiento_existente] = await pool.query(
+      "SELECT id_reserva FROM Reservas WHERE id_vuelo = ? AND asiento = ?",
+      [id_vuelo, asiento]
+    );
+
+    if (asiento_existente.length > 0) {
+      // Si el asiento ya está ocupado, devolvemos un error 400
+      return res.status(400).json({ 
+        error: "El asiento seleccionado ya se encuentra reservado para este vuelo." 
+      });
+    }
+
+    // 2. Buscar pasajero por DNI
     let [rows] = await pool.query(
       "SELECT id_pasajero FROM Pasajeros WHERE dni = ?",
       [dni]
@@ -84,7 +93,7 @@ router.post("/", async (req, res) => {
       id_pasajero = result.insertId;
     }
 
-    // Crear reserva
+    // 3. Crear reserva
     const [reservaResult] = await pool.query(
       "INSERT INTO Reservas (id_vuelo, id_pasajero, asiento, estado) VALUES (?, ?, ?, 'CONFIRMADA')",
       [id_vuelo, id_pasajero, asiento]
@@ -92,7 +101,7 @@ router.post("/", async (req, res) => {
 
     const id_reserva = reservaResult.insertId;
 
-    // Obtener resumen
+    // 4. Obtener resumen y devolver la respuesta exitosa
     const [resumen] = await pool.query(
       `
       SELECT r.id_reserva, r.asiento, r.estado, r.fecha_reserva,
@@ -106,10 +115,10 @@ router.post("/", async (req, res) => {
       [id_reserva]
     );
 
-    res.json(resumen[0]);
+    res.status(201).json(resumen[0]);
   } catch (err) {
     console.error("Error al crear reserva:", err);
-    res.status(500).json({ error: "Error al crear reserva" });
+    res.status(500).json({ error: "Error al crear reserva. Detalles: " + err.message });
   }
 });
 

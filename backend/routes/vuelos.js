@@ -1,7 +1,7 @@
 // routes/vuelos.js
 import express from "express";
-import Vuelos from "../models/vuelosmodels.js"; // asegúrate que el nombre coincide EXACTO
-
+import Vuelos from "../models/vuelosmodels.js"; // 
+import pool from "../db/db.js";
 const router = express.Router();
 
 // Obtener todos los vuelos
@@ -86,6 +86,24 @@ router.delete("/:id", async (req, res) => {
     console.error("Error al eliminar vuelo:", err);
     res.status(500).json({ error: "Error al eliminar el vuelo" });
   }
+}); // <-- Asegúrate que este cierre termina router.delete
+
+
+// --- NUEVA RUTA: Obtener asientos ocupados de un vuelo específico ---
+router.get("/:id_vuelo/asientos", async (req, res) => {
+  const { id_vuelo } = req.params;
+  try {
+    // pool ahora está definido gracias a la importación al inicio del archivo
+    const [rows] = await pool.query(
+      "SELECT asiento FROM Reservas WHERE id_vuelo = ?",
+      [id_vuelo]
+    );
+    res.json(rows.map(r => r.asiento)); // Devuelve el array de asientos ocupados
+  } catch (err) {
+    console.error("Error obteniendo asientos ocupados:", err);
+    res.status(500).json({ error: "Error al obtener asientos" });
+  }
+});
   // routes/vuelos.js
 // GET /vuelos/:id_vuelo/asientos → devuelve los ocupados
 router.get("/:id_vuelo/asientos", async (req, res) => {
@@ -102,6 +120,6 @@ router.get("/:id_vuelo/asientos", async (req, res) => {
   }
 });
 
-});
 
-export default router;   // 👈 obligatorio en ES Modules
+
+export default router;   // obligatorio en ES Modules

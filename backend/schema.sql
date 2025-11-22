@@ -39,6 +39,23 @@ CREATE TABLE IF NOT EXISTS Reservas (
 
     -- restricción: no se puede repetir asiento en el mismo vuelo
     UNIQUE (id_vuelo, asiento)
+    -- ...existing code...
+CREATE TABLE IF NOT EXISTS Reservas (
+    id_reserva INT AUTO_INCREMENT PRIMARY KEY,
+    id_vuelo INT NOT NULL,
+    id_pasajero INT NOT NULL,
+    asiento INT(5) NOT NULL,
+    fecha_reserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(20) DEFAULT 'CONFIRMADA', -- CONFIRMADA, CANCELADA, CAMBIADA
+
+    FOREIGN KEY (id_pasajero) REFERENCES Pasajeros(id_pasajero) ON DELETE CASCADE,
+    FOREIGN KEY (id_vuelo) REFERENCES Vuelos(id_vuelo) ON DELETE CASCADE,
+
+    -- restricción: no se puede repetir asiento en el mismo vuelo
+    UNIQUE (id_vuelo, asiento),
+
+
+
 );
 
 -- 4. Tabla Historial de Cambios
