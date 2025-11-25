@@ -1,5 +1,5 @@
-// models/vuelosmodels.js
-import db from "../db/db.js"; // tu conexión en ES Modules
+import db from "../db/db.js";
+
 
 const vuelos = {
   async getAll() {
@@ -13,6 +13,7 @@ const vuelos = {
         capacidad,
         asientos_disponibles,
         estado,
+        plataforma,
         created_at
       FROM Vuelos
       ORDER BY fecha_hora_salida ASC
@@ -22,16 +23,30 @@ const vuelos = {
   },
 
   async getById(id) {
-    const sql = `SELECT * FROM vuelos WHERE id_vuelo = ?`;
+    const sql = `
+      SELECT 
+        id_vuelo,
+        numero_vuelo,
+        origen,
+        destino,
+        fecha_hora_salida,
+        capacidad,
+        asientos_disponibles,
+        estado,
+        plataforma,
+        created_at
+      FROM Vuelos
+      WHERE id_vuelo = ?
+    `;
     const [rows] = await db.query(sql, [id]);
     return rows[0];
   },
 
   async create(vuelo) {
     const sql = `
-      INSERT INTO vuelos 
-        (numero_vuelo, origen, destino, fecha_hora_salida, capacidad, asientos_disponibles, estado)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Vuelos 
+        (numero_vuelo, origen, destino, fecha_hora_salida, capacidad, asientos_disponibles, estado, plataforma)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await db.query(sql, [
       vuelo.numero_vuelo,
@@ -40,16 +55,17 @@ const vuelos = {
       vuelo.fecha_hora_salida,
       vuelo.capacidad,
       vuelo.asientos_disponibles,
-      vuelo.estado || "programado"
+      vuelo.estado || "programado",
+      vuelo.plataforma || null
     ]);
     return result.insertId;
   },
 
   async update(id, vuelo) {
     const sql = `
-      UPDATE vuelos
+      UPDATE Vuelos
       SET numero_vuelo = ?, origen = ?, destino = ?, fecha_hora_salida = ?, 
-          capacidad = ?, asientos_disponibles = ?, estado = ?
+          capacidad = ?, asientos_disponibles = ?, estado = ?, plataforma = ?
       WHERE id_vuelo = ?
     `;
     const [result] = await db.query(sql, [
@@ -60,16 +76,17 @@ const vuelos = {
       vuelo.capacidad,
       vuelo.asientos_disponibles,
       vuelo.estado,
+      vuelo.plataforma || null,
       id
     ]);
     return result.affectedRows;
   },
 
   async delete(id) {
-    const sql = `DELETE FROM vuelos WHERE id_vuelo = ?`;
+    const sql = `DELETE FROM Vuelos WHERE id_vuelo = ?`;
     const [result] = await db.query(sql, [id]);
     return result.affectedRows;
   }
 };
 
-export default vuelos;   // 👈 ahora sí exporta default
+export default vuelos;

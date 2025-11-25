@@ -2,117 +2,328 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Reservas de Vuelos</title>
+  <title>Gestión de Reservas</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>✈️ Reservas de Vuelos</h1>
 
-  <!-- Card principal: tablero de vuelos -->
-  <section class="card tablero-vuelos">
-    <h2>🛫 Vuelos del Día</h2>
-    <table class="tabla-vuelos">
+<div class="flight-board">
+  <h2>Vuelos Activos</h2>
+
+  <!-- TABLA DE VUELOS -->
+  <div class="table-container">
+    <table class="flight-table">
       <thead>
         <tr>
           <th>Hora</th>
           <th>Vuelo</th>
+          <th>Origen</th>
           <th>Destino</th>
-          <th>Via</th>
-          <th>Check-in</th>
-          <th>Puerta</th>
+          <th>Plataforma</th>
+          <th>Capacidad</th>
           <th>Estado</th>
         </tr>
       </thead>
-      <tbody id="tabla-vuelos-body">
-        <!-- Se llena dinámicamente desde app.js -->
+      <tbody id="vuelos-body">
+        <!-- Se cargarán los vuelos desde el backend -->
       </tbody>
     </table>
-  </section>
+  </div>
 
-  <!-- Cards resumen KPI -->
-  <section class="resumen-vuelos">
-    <h2>Resumen de Vuelos</h2>
-    <div class="cards-container">
-      <div class="card azul" id="card-mas-viajes">
-        <h3>✈️ Vuelos con más viajes</h3>
-        <p id="mas-viajes">Cargando...</p>
-      </div>
-      <div class="card verde" id="card-mas-cambios">
-        <h3>🔄 Vuelos con más cambios</h3>
-        <p id="mas-cambios">Cargando...</p>
-      </div>
-      <div class="card violeta" id="card-total-personas">
-        <h3>👥 Total de personas viajando</h3>
-        <p id="total-personas">Cargando...</p>
-      </div>
+  <!-- CREAR RESERVA -->
+  <details class="big-drop">
+    <summary>🛫 Crear nueva reserva</summary>
+    <div class="form-box">
+      <h3>Reservar asiento</h3>
+      <label for="vuelo-select">Seleccionar vuelo:</label>
+      <select id="vuelo-select">
+        <option value="">--Selecciona un vuelo--</option>
+      </select>
+
+      <p>Hora salida: <span id="hora-salida">-</span></p>
+      <p>Plataforma: <span id="plataforma-vuelo">-</span></p>
+      <p>Asientos disponibles: <span id="asientos-disponibles">-</span></p>
+
+      <input type="text" id="nombre-pasajero" placeholder="Nombre pasajero">
+      <input type="text" id="apellido-pasajero" placeholder="Apellido pasajero">
+      <input type="text" id="dni-pasajero" placeholder="DNI pasajero">
+
+      <label for="asiento-select">Seleccionar asiento:</label>
+      <select id="asiento-select">
+        <option value="">--Selecciona un asiento--</option>
+      </select>
+
+      <button class="btn" id="guardar-reserva">Crear reserva</button>
     </div>
-  </section>
+  </details>
 
-  <!-- Panel de gestión de reservas -->
-  <section class="card">
-    <h2>Gestión de Reservas</h2>
+<!-- GESTIÓN DE PASAJEROS -->
+<details class="big-drop">
+  <summary>Gestionar Pasajeros</summary>
+  <div class="form-box">
 
-    <!-- Formulario de reserva -->
-    <form id="form-reserva">
-      <h3>Registrar Reserva</h3>
-      <label for="vuelo">Vuelo:</label>
-      <select id="vuelo" required></select>
+    <!-- REGISTRO -->
+    <h3>Registrar pasajero</h3>
+    <input type="text" id="reg-nombre" placeholder="Nombre">
+    <input type="text" id="reg-apellido" placeholder="Apellido">
+    <input type="text" id="reg-dni" placeholder="DNI">
+    <button class="btn" id="guardar-pasajero">Registrar</button>
 
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" required>
+    <!-- MODIFICAR -->
+    <h3 style="margin-top:15px;">Modificar pasajero por ID</h3>
 
-      <label for="apellido">Apellido:</label>
-      <input type="text" id="apellido" required>
+    <input type="number" id="mod-id-pasajero" placeholder="ID pasajero">
 
-      <label for="dni">DNI:</label>
-      <input type="text" id="dni" required>
-
-      <label for="asiento">Asiento disponible:</label>
-      <select id="asiento" required></select>
-
-      <button type="submit">Confirmar Reserva</button>
-    </form>
-
-    <!-- Búsqueda por ID de reserva -->
-    <div id="panel-reservas">
-      <h3>Buscar / Modificar / Eliminar Reservas</h3>
-      <label for="buscar-reserva">Ingrese ID de reserva:</label>
-      <input type="number" id="buscar-reserva">
-      <button id="btn-buscar">Buscar Reserva</button>
-      <div id="resultado-busqueda"></div>
+    <div id="mod-pasajero-datos" style="display:none; margin-top:10px;">
+      <input type="text" id="mod-nombre" placeholder="Nombre">
+      <input type="text" id="mod-apellido" placeholder="Apellido">
+      <input type="text" id="mod-dni" placeholder="DNI">
+      <button class="btn" id="modificar-pasajero">Actualizar pasajero</button>
     </div>
-  </section>
 
-  <!-- Formulario oculto para edición -->
-  <section id="panel-editar" class="card" style="display:none;">
-    <h2>Editar Reserva</h2>
-    <form id="form-editar">
-      <input type="hidden" id="editar-id">
+    <!-- ELIMINAR -->
+    <h3 style="margin-top:15px;">Eliminar pasajero por ID</h3>
+    <input type="number" id="elim-id-pasajero" placeholder="ID pasajero">
 
-      <label for="editar-nombre">Nombre:</label>
-      <input type="text" id="editar-nombre">
+    <div id="elim-info" style="display:none; margin-top:10px; color:#b9970d;">
+      <p><b>Nombre:</b> <span id="elim-nombre"></span></p>
+      <p><b>Apellido:</b> <span id="elim-apellido"></span></p>
+      <p><b>DNI:</b> <span id="elim-dni"></span></p>
 
-      <label for="editar-apellido">Apellido:</label>
-      <input type="text" id="editar-apellido">
+      <button class="btn" id="eliminar-pasajero">Eliminar pasajero</button>
+    </div>
 
-      <label for="editar-dni">DNI:</label>
-      <input type="text" id="editar-dni">
+  </div>
+</details>
 
-      <label for="editar-asiento">Asiento:</label>
-      <input type="number" id="editar-asiento">
+<script>
 
-      <!-- Nuevo campo para cambiar vuelo -->
-      <label for="editar-vuelo">Nuevo Vuelo:</label>
-      <select id="editar-vuelo"></select>
 
-      <button type="submit">Guardar cambios</button>
-    </form>
-  </section>
+/* =============================
+   CARGAR DATOS PARA MODIFICAR
+   ============================= */
+document.getElementById("mod-id-pasajero").addEventListener("input", async () => {
 
-  <!-- Resumen de reserva -->
-  <div id="resumen" class="card"></div>
+    const id = document.getElementById("mod-id-pasajero").value.trim();
+    const box = document.getElementById("mod-pasajero-datos");
 
-  <!-- Script al final para evitar errores de DOM -->
-  <script src="app.js"></script>
+    if (id === "") {
+        box.style.display = "none";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/pasajeros/${id}`);
+
+        if (!res.ok) {
+            box.style.display = "none";
+            return;
+        }
+
+        const p = await res.json();
+
+        // >>>> MOSTRAR DATOS <<<<
+        box.style.display = "block";
+        document.getElementById("mod-nombre").value = p.nombre || "";
+        document.getElementById("mod-apellido").value = p.apellido || "";
+        document.getElementById("mod-dni").value = p.dni || "";
+
+    } catch (e) {
+        console.error("Error buscando pasajero:", e);
+    }
+});
+
+/* =============================
+   CARGAR DATOS PARA ELIMINAR
+   ============================= */
+document.getElementById("elim-id-pasajero").addEventListener("input", async () => {
+
+    const id = document.getElementById("elim-id-pasajero").value.trim();
+    const box = document.getElementById("elim-info");
+
+    if (id === "") {
+        box.style.display = "none";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/pasajeros/${id}`);
+
+        if (!res.ok) {
+            box.style.display = "none";
+            return;
+        }
+
+        const p = await res.json();
+
+        // >>>> MOSTRAR DATOS <<<<
+        box.style.display = "block";
+        document.getElementById("elim-nombre").textContent = p.nombre || "-";
+        document.getElementById("elim-apellido").textContent = p.apellido || "-";
+        document.getElementById("elim-dni").textContent = p.dni || "-";
+
+    } catch (e) {
+        console.error("Error buscando pasajero:", e);
+    }
+});
+</script>
+
+
+  <!-- ESTADÍSTICAS -->
+  <div class="stats-section">
+    <div class="stats-card" id="vuelos-mas-solicitados">
+      <h3>📈 Vuelos más solicitados</h3>
+      <div class="card-container"></div>
+    </div>
+    <div class="stats-card" id="vuelos-mas-cambiados">
+      <h3>🔄 Vuelos con más cambios de reserva</h3>
+      <div class="card-container"></div>
+    </div>
+    <div class="stats-card" id="cambios-reservas">
+      <h3>✏️ Total de reservas con cambios</h3>
+      <div class="card-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BUSCAR Y MODIFICAR RESERVA -->
+<div class="form-box" style="margin-top:20px; background:#111827; padding:15px; border-radius:8px;">
+  <h3>🔍 Buscar reserva por ID</h3>
+  <input type="number" id="buscar-id-reserva-independiente" placeholder="Ingresá ID de reserva">
+  <button class="btn" id="btn-buscar-reserva-independiente">Buscar</button>
+
+  <div id="reserva-encontrada-independiente" style="display:none; margin-top:10px; color:#b9970d;">
+    <p><strong>ID:</strong> <span id="reserva-id"></span></p>
+    <p><strong>Pasajero:</strong> <span id="reserva-pasajero-nombre"></span></p>
+    <p><strong>Vuelo:</strong> <span id="reserva-vuelo-numero"></span></p>
+
+    <label for="mod-asiento">Asiento:</label>
+    <select id="mod-asiento">
+      <option value="">--Selecciona un asiento--</option>
+    </select>
+
+    <label for="mod-fecha">Fecha:</label>
+    <input type="date" id="mod-fecha">
+
+    <label for="mod-estado">Estado:</label>
+    <select id="mod-estado">
+      <option value="CONFIRMADA">CONFIRMADA</option>
+      <option value="SUSPENDIDO">SUSPENDIDO</option>
+      <option value="CANCELADA">CANCELADA</option>
+    </select>
+
+    <p><strong>Asiento actual:</strong> <span id="reserva-asiento-numero"></span></p>
+    <p><strong>Fecha actual:</strong> <span id="reserva-fecha"></span></p>
+    <p><strong>Estado actual:</strong> <span id="reserva-estado"></span></p>
+
+    <button class="btn" id="actualizar-reserva">Actualizar reserva</button>
+    <button class="btn" id="cancelar-reserva" style="background:#871818; margin-left:10px;">Cancelar reserva</button>
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ===============================
+  // CARGAR VUELOS
+  // ===============================
+  async function cargarVuelos() {
+    try {
+      const res = await fetch(`${API}/vuelos`);
+      const vuelos = await res.json();
+
+      const tbody = document.getElementById("vuelos-body");
+      tbody.innerHTML = "";
+
+      vuelos.forEach(v => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${v.fecha_hora_salida ? v.fecha_hora_salida.substring(11,16) : "-"}</td>
+          <td>${v.numero_vuelo}</td>
+          <td>${v.origen}</td>
+          <td>${v.destino}</td>
+          <td>${v.plataforma}</td>
+          <td>${v.capacidad}</td>
+          <td>${v.estado}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // llenar select de vuelo para nueva reserva
+      const vueloSelect = document.getElementById("vuelo-select");
+      vueloSelect.innerHTML = '<option value="">--Selecciona un vuelo--</option>';
+      vuelos.forEach(v => {
+        const op = document.createElement("option");
+        op.value = v.id_vuelo;
+        op.textContent = `${v.numero_vuelo} (${v.origen} → ${v.destino})`;
+        vueloSelect.appendChild(op);
+      });
+    } catch (e) { console.error(e); }
+  }
+
+  cargarVuelos();
+
+  // ===============================
+  // MOSTRAR DETALLES DE VUELO AL ELEGIR
+  // ===============================
+  document.getElementById("vuelo-select").addEventListener("change", async () => {
+    const idVuelo = document.getElementById("vuelo-select").value;
+
+    const horaSalida = document.getElementById("hora-salida");
+    const plataforma = document.getElementById("plataforma-vuelo");
+    const asientosSelect = document.getElementById("asiento-select");
+    const asientosDisp = document.getElementById("asientos-disponibles");
+
+    if (!idVuelo) {
+      horaSalida.textContent = "-";
+      plataforma.textContent = "-";
+      asientosSelect.innerHTML = '<option value="">--Selecciona un asiento--</option>';
+      asientosDisp.textContent = "-";
+      return;
+    }
+
+    try {
+      const resVuelo = await fetch(`${API}/vuelos/${idVuelo}`);
+      const vuelo = await resVuelo.json();
+
+      // CORRECCIÓN PRINCIPAL
+      horaSalida.textContent = vuelo.fecha_hora_salida
+        ? vuelo.fecha_hora_salida.substring(11,16)
+        : "-";
+
+      plataforma.textContent = vuelo.plataforma || "-";
+
+      // Cargar asientos ocupados
+      const resAsientos = await fetch(`${API}/vuelos/${idVuelo}/asientos`);
+      const ocupados = await resAsientos.json();
+
+      asientosSelect.innerHTML = '<option value="">--Selecciona un asiento--</option>';
+      let disponibles = 0;
+
+      const capacidad = vuelo.capacidad || 30;
+      for (let i = 1; i <= capacidad; i++) {
+        const asiento = `A${i}`;
+        if (!ocupados.includes(asiento)) {
+          const option = document.createElement("option");
+          option.value = asiento;
+          option.textContent = asiento;
+          asientosSelect.appendChild(option);
+          disponibles++;
+        }
+      }
+
+      asientosDisp.textContent = disponibles;
+
+    } catch (e) {
+      console.error("Error cargando vuelo:", e);
+    }
+  });
+
+});
+</script>
+
+<script type="module" src="app.js"></script>
 </body>
 </html>

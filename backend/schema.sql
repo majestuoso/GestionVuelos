@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS Pasajeros (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Tabla Vuelos
+-- 2. Tabla Vuelos (con columna PLATAFORMA agregada)
 CREATE TABLE IF NOT EXISTS Vuelos (
     id_vuelo INT AUTO_INCREMENT PRIMARY KEY,
     numero_vuelo VARCHAR(10) NOT NULL, -- ej: AR1300
     origen VARCHAR(100) NOT NULL,
     destino VARCHAR(100) NOT NULL,
+    plataforma VARCHAR(10) NOT NULL DEFAULT 'A1', -- NUEVA COLUMNA
     fecha_hora_salida DATETIME NOT NULL,
     capacidad INT NOT NULL,
     asientos_disponibles INT NOT NULL,
@@ -30,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Reservas (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     id_vuelo INT NOT NULL,
     id_pasajero INT NOT NULL,
-    asiento VARCHAR(5) NOT NULL, -- ej: 12A
+    asiento VARCHAR(10) NOT NULL, -- ej: 12A
     fecha_reserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado VARCHAR(20) DEFAULT 'CONFIRMADA', -- CONFIRMADA, CANCELADA, CAMBIADA
 

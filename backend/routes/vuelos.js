@@ -1,10 +1,13 @@
 // routes/vuelos.js
 import express from "express";
-import Vuelos from "../models/vuelosmodels.js"; // asegúrate que el nombre coincide EXACTO
+import Vuelos from "../models/vuelosmodels.js"; // objeto literal
+import db from "../db/db.js"; // tu conexión a MySQL
 
 const router = express.Router();
 
-// Obtener todos los vuelos
+// ==========================
+// OBTENER TODOS LOS VUELOS
+// ==========================
 router.get("/", async (req, res) => {
   try {
     let vuelos = await Vuelos.getAll();
@@ -12,7 +15,7 @@ router.get("/", async (req, res) => {
     const ahora = new Date();
     vuelos = vuelos.map(v => {
       const salida = new Date(v.fecha_hora_salida);
-      const llegada = new Date(salida.getTime() + 3 * 60 * 60 * 1000);
+      const llegada = new Date(salida.getTime() + 3 * 60 * 60 * 1000); // vuelo aprox 3h
 
       let estado = "programado";
       if (ahora >= salida && ahora <= llegada) {
@@ -24,32 +27,60 @@ router.get("/", async (req, res) => {
         estado = "demorado";
       }
 
-      return { ...v, estado };
+      return {
+        ...v,
+        estado,
+        plataforma: v.plataforma || "-" // aseguramos que exista plataforma
+      };
     });
 
     res.json(vuelos);
   } catch (err) {
     console.error("Error al obtener vuelos:", err);
-    // devolver siempre un array para que el front no rompa con forEach
     res.status(500).json([]);
   }
 });
 
-// Obtener un vuelo por ID
+// ==========================
+// OBTENER ASIENTOS OCUPADOS DE UN VUELO
+// ==========================
+router.get("/:id/asientos", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      "SELECT asiento FROM Reservas WHERE id_vuelo = ?",
+      [id]
+    );
+    // Devuelve solo un array con los asientos ocupados
+    res.json(rows.map(r => r.asiento));
+  } catch (err) {
+    console.error("Error obteniendo asientos ocupados:", err);
+    res.status(500).json([]);
+  }
+});
+
+// ==========================
+// OBTENER UN VUELO POR ID
+// ==========================
 router.get("/:id", async (req, res) => {
   try {
     const vuelo = await Vuelos.getById(req.params.id);
     if (!vuelo) {
       return res.status(404).json({ error: "Vuelo no encontrado" });
     }
-    res.json(vuelo);
+    res.json({
+      ...vuelo,
+      plataforma: vuelo.plataforma || "-"
+    });
   } catch (err) {
     console.error("Error al obtener vuelo:", err);
     res.status(500).json({ error: "Error al obtener el vuelo" });
   }
 });
 
-// Crear un nuevo vuelo
+// ==========================
+// CREAR NUEVO VUELO
+// ==========================
 router.post("/", async (req, res) => {
   try {
     const id = await Vuelos.create(req.body);
@@ -60,7 +91,9 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Actualizar vuelo
+// ==========================
+// ACTUALIZAR VUELO
+// ==========================
 router.put("/:id", async (req, res) => {
   try {
     const updated = await Vuelos.update(req.params.id, req.body);
@@ -74,7 +107,9 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Eliminar vuelo
+// ==========================
+// ELIMINAR VUELO
+// ==========================
 router.delete("/:id", async (req, res) => {
   try {
     const deleted = await Vuelos.delete(req.params.id);
@@ -86,22 +121,6 @@ router.delete("/:id", async (req, res) => {
     console.error("Error al eliminar vuelo:", err);
     res.status(500).json({ error: "Error al eliminar el vuelo" });
   }
-  // routes/vuelos.js
-// GET /vuelos/:id_vuelo/asientos → devuelve los ocupados
-router.get("/:id_vuelo/asientos", async (req, res) => {
-  const { id_vuelo } = req.params;
-  try {
-    const [rows] = await pool.query(
-      "SELECT asiento FROM Reservas WHERE id_vuelo = ?",
-      [id_vuelo]
-    );
-    res.json(rows.map(r => r.asiento)); // ej: ["12A","15B","7C"]
-  } catch (err) {
-    console.error("Error obteniendo asientos ocupados:", err);
-    res.status(500).json({ error: "Error al obtener asientos" });
-  }
 });
 
-});
-
-export default router;   // 👈 obligatorio en ES Modules
+export default router;

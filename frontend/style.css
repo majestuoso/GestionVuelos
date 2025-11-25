@@ -1,158 +1,97 @@
-/* ===== Base ===== */
+/* Reset básico */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f0f4f8;
-  margin: 0;
-  padding: 20px;
+  background: #f4f7fa;
   color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
 }
 
 h1 {
   text-align: center;
-  font-size: 2.2em;
-  margin-bottom: 25px;
-  color: #0077cc;
+  margin-bottom: 30px;
+  color: #1e3a8a;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* ===== Card genérica ===== */
 .card {
   background: #fff;
+  border-radius: 8px;
   padding: 20px;
-  margin-bottom: 30px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* ===== Card KPI resumen ===== */
-.cards-container {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.card.azul {
-  background: linear-gradient(135deg, #0077cc, #00aaff);
-  color: #fff;
-}
-.card.verde {
-  background: linear-gradient(135deg, #28a745, #5cd65c);
-  color: #fff;
-}
-.card.violeta {
-  background: linear-gradient(135deg, #6f42c1, #9b59b6);
-  color: #fff;
-}
-
-.card h3 {
-  margin-bottom: 10px;
-}
-
-/* ===== Tablero de vuelos ===== */
-.tablero-vuelos {
-  background: #0f172a;
-  color: #e5e7eb;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-}
-
-.tablero-vuelos h2 {
-  color: #93c5fd;
-  text-align: center;
+.card h2 {
   margin-bottom: 15px;
+  color: #1e40af;
 }
 
-.tabla-vuelos {
+.table-container {
+  overflow-x: auto;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Courier New', monospace;
-  font-size: 1rem;
 }
 
-.tabla-vuelos th {
-  background: #1e293b;
-  color: #fcd34d;
+th, td {
   padding: 10px;
   text-align: center;
-  border-bottom: 2px solid #334155;
+  border-bottom: 1px solid #ddd;
 }
 
-.tabla-vuelos td {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #334155;
-}
-
-.tabla-vuelos tr:hover {
-  background: #1e293b;
-}
-
-/* Estado con color */
-.estado {
+th {
+  background: #e0e7ff;
   font-weight: bold;
-  padding: 6px 10px;
-  border-radius: 6px;
-  display: inline-block;
 }
 
-.estado.gate-open {
-  background: #16a34a;
-  color: #fff;
-}
-.estado.boarding {
-  background: #f59e0b;
-  color: #fff;
-}
-.estado.delayed {
-  background: #dc2626;
-  color: #fff;
-}
+tr:nth-child(even) { background: #f9fafb; }
 
-/* ===== Formulario de reservas ===== */
-form label {
-  display: block;
-  margin-top: 12px;
-  font-weight: bold;
-  color: #444;
-}
-
-form input, form select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
+tr:hover { background: #dbeafe; }
 
 button {
-  padding: 12px 20px;
-  margin-top: 15px;
+  padding: 10px 15px;
   border: none;
-  border-radius: 6px;
-  background: #0077cc;
+  background: #3b82f6;
   color: #fff;
-  font-size: 1em;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition: 0.2s;
 }
 
 button:hover {
-  background: #005fa3;
-  transform: scale(1.02);
+  background: #2563eb;
 }
 
-/* ===== Panel de resumen de reserva ===== */
-#resumen {
-  background: #eef6ff;
-  color: #333;
-  margin-top: 20px;
+input, select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.flex {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.card-container {
+  background: #f0f4ff;
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  flex: 1;
 }
