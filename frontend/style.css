@@ -1,5 +1,11 @@
-/* Reset básico */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* =======================================================
+   RESET BÁSICO
+======================================================= */
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
 
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -8,6 +14,9 @@ body {
   line-height: 1.6;
 }
 
+/* =======================================================
+   CONTENEDOR GENERAL
+======================================================= */
 .container {
   max-width: 1200px;
   margin: auto;
@@ -20,6 +29,9 @@ h1 {
   color: #1e3a8a;
 }
 
+/* =======================================================
+   TARJETAS
+======================================================= */
 .card {
   background: #fff;
   border-radius: 8px;
@@ -33,6 +45,9 @@ h1 {
   color: #1e40af;
 }
 
+/* =======================================================
+   TABLAS
+======================================================= */
 .table-container {
   overflow-x: auto;
 }
@@ -42,21 +57,38 @@ table {
   border-collapse: collapse;
 }
 
+/* Texto visible siempre */
 th, td {
   padding: 10px;
   text-align: center;
   border-bottom: 1px solid #ddd;
+  color: #333 !important;
 }
 
+/* Encabezado */
 th {
   background: #e0e7ff;
   font-weight: bold;
 }
 
-tr:nth-child(even) { background: #f9fafb; }
+/* =======================================================
+   TABLA DE VUELOS ACTIVOS — FILAS GRIS CLARO
+======================================================= */
 
-tr:hover { background: #dbeafe; }
+/* Fondo gris claro en todas las filas */
+.flight-table tr {
+  background: #39985c !important;   /* gris claro */
+  color: #333 !important;
+}
 
+/* Hover sin cambio */
+.flight-table tr:hover {
+  background: #44048e !important;
+}
+
+/* =======================================================
+   FORMULARIOS Y BOTONES
+======================================================= */
 button {
   padding: 10px 15px;
   border: none;
@@ -88,10 +120,17 @@ input, select {
   flex-wrap: wrap;
 }
 
+/* Contenedores de estadísticas u otros bloques */
 .card-container {
   background: #f0f4ff;
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 10px;
   flex: 1;
+}
+
+/* Elimina la línea blanca debajo del título */
+.flight-board h2 {
+  margin: 0 0 5px 0;
+  padding: 0;
 }
